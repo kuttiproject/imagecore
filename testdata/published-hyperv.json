@@ -1,0 +1,23 @@
+{
+    "1.35": {
+        "ImageK8sVersion": "1.35",
+        "ImageChecksum": "b1d0ecd3328ee5a74cb04762b7a15f88e23660aa90aa51a016bc5f444e0f596f",
+        "ImageSourceURL": "https://github.com/kuttiproject/driver-hyperv-images/releases/download/v0.2/kutti-1.35.vhdx.zip",
+        "ImageStatus": "NotDownloaded",
+        "ImageDeprecated": false
+    },
+    "1.36": {
+        "ImageK8sVersion": "1.36",
+        "ImageChecksum": "a384fcf00cc9299c0220e12f3ff7c9888b8290a9263b1f18be7f70304d961d78",
+        "ImageSourceURL": "https://github.com/kuttiproject/driver-hyperv-images/releases/download/v0.2/kutti-1.36.vhdx.zip",
+        "ImageStatus": "NotDownloaded",
+        "ImageDeprecated": false
+    },
+    "1.37": {
+        "ImageK8sVersion": "1.37",
+        "ImageChecksum": "d7edd0a8cdb72c0632bec824f2c7f1b1ba77c857611044ed2fbb1a7dad13a9ab",
+        "ImageSourceURL": "https://github.com/kuttiproject/driver-hyperv-images/releases/download/v0.2/kutti-1.37.vhdx.zip",
+        "ImageStatus": "NotDownloaded",
+        "ImageDeprecated": false
+    }
+}

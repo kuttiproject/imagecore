@@ -1,0 +1,23 @@
+{
+    "1.35": {
+        "ImageK8sVersion": "1.35",
+        "ImageChecksum": "fa68ebb3cf5388d118e77f52c82dd5a7c03862f9bf9720ba71d7b73c521cce66",
+        "ImageStatus": "NotDownloaded",
+        "ImageSourceURL": "https://github.com/kuttiproject/driver-vbox-images/releases/download/v0.5/kutti-k8s-1.35.ova",
+        "ImageDeprecated": false
+    },
+    "1.36": {
+        "ImageK8sVersion": "1.36",
+        "ImageChecksum": "5392ed4b23b7eab8c4f8cde2e848678f58d4442d652293d512da5505298d7ba4",
+        "ImageStatus": "NotDownloaded",
+        "ImageSourceURL": "https://github.com/kuttiproject/driver-vbox-images/releases/download/v0.5/kutti-k8s-1.36.ova",
+        "ImageDeprecated": false
+    },
+    "1.37": {
+        "ImageK8sVersion": "1.37",
+        "ImageChecksum": "e9c62b9da88412ce51a7f07441afb10764bafa1198e11151a7e3289904ba6699",
+        "ImageStatus": "NotDownloaded",
+        "ImageSourceURL": "https://github.com/kuttiproject/driver-vbox-images/releases/download/v0.5/kutti-k8s-1.37.ova",
+        "ImageDeprecated": false
+    }
+}

@@ -1,14 +1,14 @@
 package imagecore
 
-import "sync"
-
 // A Store manages the image list and the cached image files of one driver.
-// Create one with New. A Store is safe for use by several goroutines.
+// Create one with New.
+//
+// A Store keeps no copy of the image list in memory. Every operation reads
+// the list file afresh, so that several kutti processes, each with its own
+// Store, see each other's changes. Once created, a Store never changes, so it
+// is safe for use by several goroutines.
 type Store struct {
 	config Config
-
-	mu     sync.Mutex // guards images
-	images map[string]*Image
 }
 
 // New creates a Store for the driver described by config. It does no I/O, and

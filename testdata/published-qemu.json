@@ -1,0 +1,23 @@
+{
+    "1.35": {
+        "ImageK8sVersion": "1.35",
+        "ImageChecksum": "1630fbfef783c490b83d17dd21f2e8243ea7120fa2917455b8d1c1294a565362",
+        "ImageSourceURL": "https://github.com/kuttiproject/driver-qemu-images/releases/download/v0.1/kutti-1.35.qcow2",
+        "ImageStatus": "NotDownloaded",
+        "ImageDeprecated": false
+    },
+    "1.36": {
+        "ImageK8sVersion": "1.36",
+        "ImageChecksum": "3889fa564078c7fd5297535fbb1cf80856a5c630b73ddc0fc6132cae2e0a9ad8",
+        "ImageSourceURL": "https://github.com/kuttiproject/driver-qemu-images/releases/download/v0.1/kutti-1.36.qcow2",
+        "ImageStatus": "NotDownloaded",
+        "ImageDeprecated": false
+    },
+    "1.37": {
+        "ImageK8sVersion": "1.37",
+        "ImageChecksum": "177f4fba665c19086437fde195cf67f0381a9fda616c5dc81e6ff6b0cffe2628",
+        "ImageSourceURL": "https://github.com/kuttiproject/driver-qemu-images/releases/download/v0.1/kutti-1.37.qcow2",
+        "ImageStatus": "NotDownloaded",
+        "ImageDeprecated": false
+    }
+}
