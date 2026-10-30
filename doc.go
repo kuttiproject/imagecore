@@ -10,6 +10,11 @@
 // New does no I/O, and nothing in this package does any at import time. The
 // first operation on a Store reads the list.
 //
+// Fetching, importing and purging an image are serialized, per version, between
+// processes of the same user. The list is changed only under its own short
+// lock, one image at a time, so that processes do not undo each other's
+// changes.
+//
 // The Image type implements drivercore.Image. A driver declares
 //
 //	type Image = imagecore.Image

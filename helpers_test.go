@@ -26,6 +26,10 @@ func testWorkspace(t *testing.T) string {
 	}
 	t.Cleanup(workspace.Reset)
 
+	// Keep what is logged off the test output. A test that wants to look at
+	// the log calls captureLog itself, which takes over.
+	captureLog(t)
+
 	dir, err := workspace.ConfigDir()
 	if err != nil {
 		t.Fatal(err)

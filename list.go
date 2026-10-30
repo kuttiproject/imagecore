@@ -125,6 +125,43 @@ func (s *Store) images() ([]*Image, error) {
 	return result, nil
 }
 
+// ListImages returns the images in the local image list, in version order. It
+// returns an empty slice and an error if the list cannot be read.
+func (s *Store) ListImages() ([]drivercore.Image, error) {
+	images, err := s.images()
+	if err != nil {
+		return []drivercore.Image{}, err
+	}
+
+	result := make([]drivercore.Image, len(images))
+	for i, img := range images {
+		result[i] = img
+	}
+
+	return result, nil
+}
+
+// GetImage returns the image for a version of Kubernetes. It returns a nil
+// image and an error if the list cannot be read, or has no such image.
+func (s *Store) GetImage(k8sversion string) (drivercore.Image, error) {
+	path, err := s.listPath()
+	if err != nil {
+		return nil, err
+	}
+
+	list, err := s.readList(path)
+	if err != nil {
+		return nil, err
+	}
+
+	img, ok := list[k8sversion]
+	if !ok {
+		return nil, fmt.Errorf("no image present for K8s version %s", k8sversion)
+	}
+
+	return img, nil
+}
+
 // ValidK8sVersion returns true if the specified Kubernetes version is in the
 // image list. It returns false if the list cannot be read, and logs why.
 func (s *Store) ValidK8sVersion(k8sversion string) bool {
@@ -319,4 +356,49 @@ func setAside(path string) (string, error) {
 	}
 
 	return backup, nil
+}
+
+// errImageChanged is returned by setStatus when the entry in the list is no
+// longer for the image it was asked to change.
+var errImageChanged = errors.New("imagecore: the image in the image list has changed or been removed")
+
+// setStatus changes the status of one image in the local list. It reads the
+// list again, under the list lock, and changes that image only, so it does not
+// undo what another process has done to the list in the meantime. It fails
+// with errImageChanged if the list has no entry for the version, or the entry
+// is for a different image, that is, has another checksum or source URL, than
+// img. If the list cannot be used, it fails and leaves the file alone.
+func (s *Store) setStatus(img *Image, status drivercore.ImageStatus) error {
+	path, err := s.listPath()
+	if err != nil {
+		return err
+	}
+
+	unlock, err := s.lockList(path)
+	if err != nil {
+		return err
+	}
+	defer unlock()
+
+	list, err := s.readList(path)
+	if err != nil {
+		return err
+	}
+
+	entry := list[img.k8sVersion]
+	if !img.sameAs(entry) {
+		return errImageChanged
+	}
+
+	if entry.status == status {
+		return nil
+	}
+	entry.status = status
+
+	data, err := json.Marshal(list)
+	if err != nil {
+		return err
+	}
+
+	return workspace.AtomicWriteFile(path, data)
 }

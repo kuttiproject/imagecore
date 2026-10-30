@@ -41,7 +41,9 @@ type Config struct {
 	SourceURL func() string
 
 	// CacheDir returns the directory that holds cached image files, creating
-	// it if necessary. Note that if this directory is shared by several users,
+	// it if necessary. Downloads, and files made by Unpack, are put in work
+	// directories inside it, which are removed when the work is done. Note
+	// that if this directory is shared by several users,
 	// as it is for the qemu driver, the locks taken by a Store, which are
 	// per user, do not serialize the users against each other.
 	CacheDir func() (string, error)
@@ -50,8 +52,9 @@ type Config struct {
 	// and cached, whether it was downloaded or given to Image.FromFile. It
 	// returns the path of the file to check and cache, and a function to call
 	// when that file is no longer needed, which may be nil. workdir is a
-	// directory in which Unpack may create files. If Unpack is nil, the file
-	// is used as it is.
+	// directory in which Unpack may create files, which is removed with
+	// everything in it when the image has been dealt with. If Unpack is nil,
+	// the file is used as it is.
 	Unpack func(path string, workdir string) (imagepath string, cleanup func(), err error)
 
 	// InUse, if not nil, reports whether the cached image for a version is in
