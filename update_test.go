@@ -210,32 +210,56 @@ func TestUpdateNeedsAllOfChecksumAndURLToMatch(t *testing.T) {
 	}
 }
 
-func TestUpdateWithAJSONNullListSavesAnEmptyList(t *testing.T) {
-	testWorkspace(t)
-	server := newListServer(t, `null`)
-	url := server.URL
-	store, path := newTestStore(t, &url)
+// A downloaded list with no images is rejected, like any other list that
+// cannot be trusted. Accepting it would drop every entry, and the next good
+// list would then have every image Notdownloaded, even those still cached.
+func TestUpdateRejectsAListWithNoImagesAndKeepsTheDownloadedStatus(t *testing.T) {
+	for _, body := range []string{`{}`, `null`, " {}\n", `{ }`} {
+		t.Run(strings.TrimSpace(body), func(t *testing.T) {
+			testWorkspace(t)
+			server := newListServer(t, body)
+			url := server.URL
+			store, path := newTestStore(t, &url)
 
-	if err := store.UpdateImageList(); err != nil {
-		t.Fatal(err)
-	}
-	if got := readFile(t, path); got != `{}` {
-		t.Errorf("got %s", got)
+			local := list(entry("1.30", "c", "u", "Downloaded", false))
+			writeFile(t, path, local)
+
+			err := store.UpdateImageList()
+			if err == nil || !strings.Contains(err.Error(), "has no images") {
+				t.Fatalf("want a 'has no images' error, got %v", err)
+			}
+			if got := readFile(t, path); got != local {
+				t.Fatalf("the local list was changed to %s", got)
+			}
+
+			// The next good list finds the image still Downloaded.
+			server.serve(list(entry("1.30", "c", "u", "Notdownloaded", false)))
+			if err := store.UpdateImageList(); err != nil {
+				t.Fatal(err)
+			}
+			img, err := store.GetImage("1.30")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if img.Status() != drivercore.ImageStatusDownloaded {
+				t.Errorf("status = %v, want Downloaded", img.Status())
+			}
+		})
 	}
 }
 
-func TestUpdateAcceptsAnEmptyList(t *testing.T) {
-	testWorkspace(t)
+func TestUpdateWithAListWithNoImagesAndNoLocalListCreatesNothing(t *testing.T) {
+	dir := testWorkspace(t)
 	server := newListServer(t, `{}`)
 	url := server.URL
-	store, path := newTestStore(t, &url)
-	writeFile(t, path, list(entry("1.30", "c", "u", "Downloaded", false)))
+	store, _ := newTestStore(t, &url)
 
-	if err := store.UpdateImageList(); err != nil {
-		t.Fatal(err)
+	err := store.UpdateImageList()
+	if err == nil || !strings.Contains(err.Error(), "has no images") {
+		t.Fatalf("want a 'has no images' error, got %v", err)
 	}
-	if got := readFile(t, path); got != `{}` {
-		t.Errorf("got %s", got)
+	if got := dirNames(t, dir); len(got) != 0 {
+		t.Errorf("files in the config directory: %v", got)
 	}
 }
 
@@ -248,6 +272,8 @@ func TestUpdateRejectsAnInvalidDownloadedList(t *testing.T) {
 		want string // text the error must contain, besides the URL
 	}{
 		{"not JSON", `<html>not found</html>`, "could not be parsed"},
+		{"no images", `{}`, "has no images"},
+		{"JSON null", `null`, "has no images"},
 		{"empty", ``, "could not be parsed"},
 		{"an array", `[]`, "could not be parsed"},
 		{"a string entry", `{"1.30":"x"}`, "could not be parsed"},
@@ -326,7 +352,8 @@ func TestUpdateRejectsAListThatIsTooLarge(t *testing.T) {
 	}
 
 	// One byte less is fine.
-	server.serve(`{}` + strings.Repeat(" ", maxListSize-2))
+	atlimit := list(entry("1.35", "c", "u", "Notdownloaded", false))
+	server.serve(atlimit + strings.Repeat(" ", maxListSize-len(atlimit)))
 	if err := store.UpdateImageList(); err != nil {
 		t.Errorf("a list at the limit should be accepted: %v", err)
 	}

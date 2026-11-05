@@ -42,7 +42,7 @@ The `InUse` function also switches on a short-circuit: an image that is already 
 
 ## Behaviour
 
-**The list.** The local list is `ConfigFile` in the workspace config directory. A missing file is an empty list, and reading never writes. `UpdateImageList` downloads the master list, parses and checks it in memory, and only then replaces the local list. An image that was `Downloaded` stays so if the new list has the same checksum and source URL for it. Every other image is `Notdownloaded`, whatever the master list says.
+**The list.** The local list is `ConfigFile` in the workspace config directory. A missing file is an empty list, and reading never writes. `UpdateImageList` downloads the master list, parses and checks it in memory, and only then replaces the local list. A downloaded list that has no images is rejected like an invalid one, so a bad download cannot empty the list. An image that was `Downloaded` stays so if the new list has the same checksum and source URL for it. Every other image is `Notdownloaded`, whatever the master list says.
 
 **Bad lists.** A version must match `^[A-Za-z0-9][A-Za-z0-9._+-]*$`, be at most 64 characters long, and be the key its entry is stored under, because versions go into file names. One invalid entry rejects the whole list. A downloaded list that is rejected is logged at `kuttilog.Error`, and the local list is kept as it was. A local list that cannot be used is reported as an error, and left alone; `UpdateImageList` is the way to repair it, and moves the damaged file aside as `<name>.<timestamp>.corrupt`. A list that cannot be read for any other reason is never replaced.
 

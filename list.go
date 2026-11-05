@@ -206,8 +206,11 @@ func (s *Store) K8sVersions() []string {
 // list, but their cached files are not touched.
 //
 // The downloaded data is checked before anything changes. If it cannot be
-// parsed, or any entry is invalid, the whole list is rejected, an error is
-// logged and returned, and the local list is left as it was.
+// parsed, any entry is invalid, or it has no images at all, the whole list is
+// rejected, an error is logged and returned, and the local list is left as it
+// was. A list with no images is never what a master list should be, and
+// accepting one would make every cached image Notdownloaded when the next good
+// list arrives.
 //
 // If the local list cannot be used, because its content is invalid, it is
 // moved aside as "<name>.<timestamp>.corrupt", in the same directory, and
@@ -227,6 +230,9 @@ func (s *Store) UpdateImageList() error {
 	}
 
 	newlist, err := s.parseList(data, fmt.Sprintf("the image list downloaded from %s", url))
+	if err == nil && len(newlist) == 0 {
+		err = fmt.Errorf("imagecore: the image list downloaded from %s has no images", url)
+	}
 	if err != nil {
 		kuttilog.Printf(kuttilog.Error, "%v. The whole list was rejected, and the current list has been kept.", err)
 		return err
