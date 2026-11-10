@@ -2,6 +2,9 @@
 
 Image list and image cache management shared by the kutti drivers (`driver-vbox`, `driver-hyperv` and `driver-qemu`).
 
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/kuttiproject/imagecore)](https://pkg.go.dev/github.com/kuttiproject/imagecore)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/kuttiproject/imagecore?include_prereleases)
+
 The three drivers used to carry near-identical copies of this code. `imagecore` holds the one copy, and fixes in it once. A driver describes itself with a `Config`, calls `New`, and declares `type Image = imagecore.Image`, so its exported API does not change.
 
 ## Using it
@@ -71,6 +74,6 @@ The JSON format of the list, the source URLs, and the cache paths and file names
 go test ./...
 ```
 
-Most tests need nothing but the module. They use `httptest` servers and a temporary workspace, and replace the workspace and logging, so they must not run in parallel. Until `workspace` v0.3.2, which has `LockFile`, is released, build against a local `workspace` with a `go.work` file.
+Most tests need nothing but the module. They use `httptest` servers and a temporary workspace, and replace the workspace and logging, so they must not run in parallel.
 
 The tests of locking, and of replacing and removing files, behave differently on Windows, and should be run there too.
