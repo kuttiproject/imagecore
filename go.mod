@@ -7,3 +7,5 @@ require (
 	github.com/kuttiproject/kuttilog v0.2.1
 	github.com/kuttiproject/workspace v0.4.0
 )
+
+retract v0.1.0 // Accidentally published with wrong go.sum
